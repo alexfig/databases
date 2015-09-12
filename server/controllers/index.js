@@ -5,7 +5,7 @@ module.exports = {
     get: function (req, res) {
       models.messages.get(function(err, results){
         var statusCode = err ? 404 : 202
-        sendResponse(res, results, statusCode);
+        sendResponse(res, {results: results}, statusCode);
       });
     }, // a function which handles a get request for all messages
     post: function (req, res) {

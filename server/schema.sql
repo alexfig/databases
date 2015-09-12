@@ -20,7 +20,7 @@ CREATE TABLE messages (
   id            int(10) AUTO_INCREMENT,
   text          varchar(150),
   created_at    timestamp,
-  user_id       int(10),
+  user_id       int(10), 
   roomname     varchar(30),
   primary key (id),
   foreign key (user_id)   references users(id),

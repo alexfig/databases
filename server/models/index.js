@@ -3,7 +3,8 @@ var db = require('../db');
 module.exports = {
   messages: {
     get: function (cb) {
-      db.query("SELECT * FROM messages", function(err, results){
+      db.query("SELECT username, text, roomname, created_at FROM users join messages WHERE users.id = messages.user_id", function(err, results){
+        console.log('messages: ' + results);
         cb(err, results);
       });
     }, // a function which produces all the messages
@@ -20,7 +21,7 @@ module.exports = {
         console.log(results);
         var post = {
           user_id: results.pop().id,
-          text: data.message,
+          text: data.text,
           roomname: data.roomname
         };
         // Insert into db 
