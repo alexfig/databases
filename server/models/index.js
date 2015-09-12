@@ -1,57 +1,20 @@
-var db = require('../db');
+var Sequelize = require("sequelize");
+var sequelize = new Sequelize("chat", "root", "");
 
-module.exports = {
-  messages: {
-    get: function (cb) {
-      db.query("SELECT username, text, roomname, created_at FROM users join messages WHERE users.id = messages.user_id", function(err, results){
-        console.log('messages: ' + results);
-        cb(err, results);
-      });
-    }, // a function which produces all the messages
-    post: function (data, cb) {
-      console.log('models message post');
-      // Query DB for user id
-      db.query("SELECT id FROM users WHERE username = ?", data.username, function(err, results) {
-        if(err) {
-          console.log('Error selecting');
-          cb(err);
-          return;
-        }
-        // Get the POST data
-        console.log(results);
-        var post = {
-          user_id: results.pop().id,
-          text: data.text,
-          roomname: data.roomname
-        };
-        // Insert into db 
-        db.query("INSERT IGNORE INTO rooms SET ?", {roomname: data.roomname}, function (err) {
-          if(err) cb(err);
-          else{
-            db.query("INSERT INTO messages SET ?", post, function (err) {
-              cb(err);
-            });
-          }
-        });
+module.exports.User = sequelize.define('User', {
+  id: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
+  username: {type: Sequelize.STRING, allowNull: false, defaultValue: 'Anonymous', unique: true}
+});
 
-      }); // a function which can be used to insert a message into the database
-    }
-  },
+module.exports.Message = sequelize.define('Message' {
+  userid: {type: Sequelize.INTEGER, references: {model: User, key:id} },
+  text: Sequelize.STRING,
+  roomname: Sequelize.STRING
+});
 
-  users: {
-    // Ditto as above.
-    get: function () {
-
-    },
-    post: function (data, cb) {
-      console.log('models user post');
-      var user = {
-        username: data.username
-      };
-      db.query("INSERT IGNORE INTO users SET ?", user, function (err) {
-        cb(err);
-      });
-    }
-  }
-};
-
+module.exports.User.sync().success(function() {
+  console.log("Successfully synced User table");
+});
+module.exports.Messages.sync().success(function() {
+  console.log("Successfully synced Messages table");
+});

@@ -3,23 +3,35 @@ var models = require('../models');
 module.exports = {
   messages: {
     get: function (req, res) {
-      models.messages.get(function(err, results){
-        var statusCode = err ? 404 : 202
-        sendResponse(res, {results: results}, statusCode);
-      });
-    }, // a function which handles a get request for all messages
+      models.Messages.findAll()
+      .success(function(messages) {
+        sendResponse(res, {results: messages}, 202);
+      })
+      .error(function(error) {
+        console.log(error);
+        sendResponse(res, 'cant get message', 404);
+      })
+    },
+    // a function which handles a get request for all messages
     post: function (req, res) {
       console.log('message post');
-      models.messages.post(req.body, function(err) {
-        if (err) {
-          console.log(err);
-          sendResponse(res, "unable to send message", 404);
-        } else {
+      models.Users.findOrCreate({username: req.body.username})
+      .success(function(user){
+        var message = {
+          userid: user.id,
+          text: req.body.text,
+          rooomname: req.body.rooomname
+        };
+        var newMessage = models.Messages.build(message);
+        newMessage.save().success(function(){
           sendResponse(res, "Posted message", 201);
-        }
+        });
+      })
+      .error(function(){
+        console.log(error);
+        sendResponse(res, 'cant post message', 404);
       });
-    } // a function which handles posting a message to the database
-  },
+    }, // a function which handles posting a message to the database
 
   users: {
     get: function (req, res) {
@@ -28,12 +40,13 @@ module.exports = {
     post: function (req, res) {
       console.log('user post');
       console.log('user collectData cb');
-      models.users.post(req.body, function(err) {
-        if (err) {
-          sendResponse(res, "unable to create user", 404);
-        } else {
-          sendResponse(res, "Created user", 201);
-        }
+      models.Users.findOrCreate({username: req.body.username})
+      .success(function(){
+        sendResponse(res, "Created user", 201);
+      })
+      .error(function(error){
+        console.log(error);
+        sendResponse(res, "unable to create user", 404);
       });
     }
   }
