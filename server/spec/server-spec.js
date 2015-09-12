@@ -16,7 +16,7 @@ describe("Persistent Node Chat Server", function() {
     });
     dbConnection.connect();
 
-       var tablename = ""; // TODO: fill this out
+       var tablename = "messages"; // TODO: fill this out
 
     /* Empty the db table before each test so that multiple tests
      * (or repeated runs of the tests) won't screw each other up: */
@@ -65,22 +65,30 @@ describe("Persistent Node Chat Server", function() {
 
   it("Should output all messages from the DB", function(done) {
     // Let's insert a message into the db
-       var tablename = ""; // TODO: fill this out
+    var tablename = "messages"; // TODO: fill this out
     // TODO - The exact query string and query args to use
     // here depend on the schema you design, so I'll leave
     // them up to you. */
+    var queryString = "INSERT INTO messages set ?";
+    var queryArgs = { 
+      text: "Men like you can never change!",
+      roomname: "main"
+    };
 
-    dbConnection.query(queryString, queryArgs, function(err) {
-      if (err) { throw err; }
+    dbConnection.query("INSERT INTO rooms SET ?", {roomname: "main"}, function(err) {
+      dbConnection.query(queryString, queryArgs, function(err) {
+        if (err) { throw err; }
 
-      // Now query the Node chat server and see if it returns
-      // the message we just inserted:
-      request("http://127.0.0.1:3000/classes/messages", function(error, response, body) {
-        var messageLog = JSON.parse(body);
-        expect(messageLog[0].text).to.equal("Men like you can never change!");
-        expect(messageLog[0].roomname).to.equal("main");
-        done();
+        // Now query the Node chat server and see if it returns
+        // the message we just inserted:
+        request("http://127.0.0.1:3000/classes/messages", function(error, response, body) {
+          var messageLog = JSON.parse(body);
+          expect(messageLog[0].text).to.equal("Men like you can never change!");
+          expect(messageLog[0].roomname).to.equal("main");
+          done();
+        });
       });
-    });
+    })
+  
   });
 });
