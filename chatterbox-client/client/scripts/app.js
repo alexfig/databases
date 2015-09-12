@@ -80,7 +80,7 @@ var app = {
       url: app.server + 'messages',
       type: 'GET',
       contentType: 'application/json',
-      data: { order: 'created_at'},
+      data: { order: 'createdAt'},
       success: function(data) {
         // Don't bother if we have nothing to work with
         if (!data.results || !data.results.length) { return; }

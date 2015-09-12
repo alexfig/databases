@@ -3,7 +3,7 @@ var db = require('../db');
 module.exports = {
   messages: {
     get: function (cb) {
-      db.query("SELECT username, text, roomname, created_at FROM users join messages WHERE users.id = messages.user_id", function(err, results){
+      db.query("SELECT username, text, roomname, createdAt FROM users join messages WHERE users.id = messages.userId", function(err, results){
         console.log('messages: ' + results);
         cb(err, results);
       });
@@ -20,20 +20,14 @@ module.exports = {
         // Get the POST data
         console.log(results);
         var post = {
-          user_id: results.pop().id,
+          userId: results.pop().id,
           text: data.text,
           roomname: data.roomname
         };
         // Insert into db 
-        db.query("INSERT IGNORE INTO rooms SET ?", {roomname: data.roomname}, function (err) {
-          if(err) cb(err);
-          else{
-            db.query("INSERT INTO messages SET ?", post, function (err) {
-              cb(err);
-            });
-          }
+        db.query("INSERT INTO messages SET ?", post, function (err) {
+          cb(err);
         });
-
       }); // a function which can be used to insert a message into the database
     }
   },

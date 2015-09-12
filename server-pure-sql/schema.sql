@@ -9,22 +9,15 @@ CREATE TABLE users (
   primary key (id)
 );
 
-CREATE TABLE rooms (
-  /* Describe your table here.*/
-  roomname  varchar(30),
-  primary key (roomname)
-);
-
 CREATE TABLE messages (
   /* Describe your table here.*/
   id            int(10) AUTO_INCREMENT,
   text          varchar(150),
-  created_at    timestamp,
-  user_id       int(10), 
+  createdAt    timestamp,
+  userId       int(10), 
   roomname     varchar(30),
   primary key (id),
-  foreign key (user_id)   references users(id),
-  foreign key (roomname) references rooms(roomname)
+  foreign key (userId)   references users(id)
 );
 
 /* Create other tables and define schemas for them here! */

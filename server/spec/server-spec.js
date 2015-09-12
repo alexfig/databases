@@ -1,7 +1,7 @@
 /* You'll need to have MySQL running and your Node server running
  * for these tests to pass. */
 
-var models = require('../models');
+var mysql = require('mysql');
 var request = require("request"); // You might need to npm install the request module!
 var expect = require('../../node_modules/chai/chai').expect;
 
@@ -73,7 +73,7 @@ describe("Persistent Node Chat Server", function() {
     var queryArgs = { 
       text: "Men like you can never change!",
       roomname: "main",
-      user_id: 1
+      userId: 1
     };
 
     dbConnection.query("INSERT INTO rooms SET ?", {roomname: "main"}, function(err) {
@@ -84,8 +84,8 @@ describe("Persistent Node Chat Server", function() {
         // the message we just inserted:
         request("http://127.0.0.1:3000/classes/messages", function(error, response, body) {
           var messageLog = JSON.parse(body);
-          expect(messageLog[0].text).to.equal("Men like you can never change!");
-          expect(messageLog[0].roomname).to.equal("main");
+          expect(messageLog.results[0].text).to.equal("Men like you can never change!");
+          expect(messageLog.results[0].roomname).to.equal("main");
           done();
         });
       });
